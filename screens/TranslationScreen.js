@@ -29,6 +29,7 @@ export default function TranslationScreen() {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.mainTitle}>Appli de Tilio</Text>
       <Text style={styles.title}>Traduction (Français → Anglais)</Text>
       <TextInput
         style={styles.input}
@@ -59,6 +60,13 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#fff',
     justifyContent: 'center',
+  },
+  mainTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#007AFF',
+    textAlign: 'center',
+    marginBottom: 10,
   },
   title: {
     fontSize: 20,
