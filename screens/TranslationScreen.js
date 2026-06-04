@@ -13,15 +13,17 @@ export default function TranslationScreen() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=fr|en`);
+      const response = await fetch(
+        `https://translate.googleapis.com/translate_a/single?client=gtx&sl=fr&tl=en&dt=t&q=${encodeURIComponent(text)}`
+      );
       const data = await response.json();
-      if (data && data.responseData && data.responseData.translatedText) {
-        setTranslation(data.responseData.translatedText);
+      if (data && data[0] && data[0][0] && data[0][0][0]) {
+        setTranslation(data[0][0][0]);
       } else {
-        setError('Error translating text.');
+        setError('Erreur lors de la traduction.');
       }
     } catch (err) {
-      setError('Network error.');
+      setError('Erreur réseau.');
     } finally {
       setLoading(false);
     }
@@ -66,7 +68,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#007AFF',
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: 20,
+    borderColor: 'red',
+    borderWidth: 2,
+    borderRadius: 10,
+    padding: 10,
   },
   title: {
     fontSize: 20,
