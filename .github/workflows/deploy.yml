@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - master
+      - feat/translation-tab-909141605028032996
 
 permissions:
   contents: write
