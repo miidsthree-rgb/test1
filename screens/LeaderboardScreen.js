@@ -36,12 +36,6 @@ export default function LeaderboardScreen() {
   }, [isFocused, activeBoard]);
 
 
-
-  const handleResetStats = () => {
-    const cleared = clearStats();
-    setStats(cleared);
-  };
-
   const getRankEmoji = (index) => {
     switch (index) {
       case 0: return '🥇';
@@ -166,18 +160,7 @@ export default function LeaderboardScreen() {
             </View>
           </View>
 
-          {/* Reset Stats Button */}
-          <Pressable 
-            style={({ pressed }) => [
-              styles.resetButton,
-              { marginTop: 20 },
-              pressed && styles.resetButtonPressed
-            ]}
-            onPress={handleResetStats}
-          >
-            <Ionicons name="refresh-outline" size={16} color={theme.colors.textMuted} />
-            <Text style={styles.resetButtonText}>Réinitialiser les statistiques</Text>
-          </Pressable>
+
         </View>
       ) : (
         <>
