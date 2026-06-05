@@ -548,7 +548,7 @@ export default function QuestionScreen() {
 
   // New arcade states
   const [lives, setLives] = useState(3);
-  const [timeLeft, setTimeLeft] = useState(15);
+  const [timeLeft, setTimeLeft] = useState(60);
   const [usedHint, setUsedHint] = useState(false);
   const [showHintText, setShowHintText] = useState("");
   const [coins, setCoins] = useState(50);
@@ -631,7 +631,7 @@ export default function QuestionScreen() {
     const hasExtraLife = hasExtraLifeUpgrade();
     const hasExtendedTimer = hasExtendedTimerUpgrade();
     setLives(hasExtraLife ? 4 : 3);
-    setTimeLeft(hasExtendedTimer ? 20 : 15);
+    setTimeLeft(hasExtendedTimer ? 90 : 60);
     setUsedHint(false);
     setShowHintText("");
   };
@@ -706,7 +706,7 @@ export default function QuestionScreen() {
 
     // Reset timer and powerups
     const hasExtendedTimer = hasExtendedTimerUpgrade();
-    setTimeLeft(hasExtendedTimer ? 20 : 15);
+    setTimeLeft(hasExtendedTimer ? 90 : 60);
     setShowHintText("");
     setUsedHint(false);
 
@@ -867,7 +867,7 @@ export default function QuestionScreen() {
                   </View>
                   <View style={styles.ruleRow}>
                     <Ionicons name="time" size={18} color={theme.colors.secondary} style={{ marginRight: 10 }} />
-                    <Text style={styles.ruleText}>{hasExtendedTimerUpgrade() ? 'Temps Étendu (20s)' : 'Chrono : 15s par question'}</Text>
+                    <Text style={styles.ruleText}>{hasExtendedTimerUpgrade() ? 'Temps Étendu (90s)' : 'Chrono : 60s par question'}</Text>
                   </View>
                   <View style={styles.ruleRow}>
                     <Ionicons name="ellipse" size={18} color="#FBBF24" style={{ marginRight: 10 }} />
@@ -975,10 +975,10 @@ export default function QuestionScreen() {
 
                   {/* Timer Display */}
                   <View style={styles.timerContainer}>
-                    <Ionicons name="time-outline" size={18} color={timeLeft <= 5 ? theme.colors.error : theme.colors.secondary} />
+                    <Ionicons name="time-outline" size={18} color={timeLeft <= 10 ? theme.colors.error : theme.colors.secondary} />
                     <Text style={[
                       styles.timerText,
-                      timeLeft <= 5 && styles.timerTextWarning
+                      timeLeft <= 10 && styles.timerTextWarning
                     ]}>
                       {timeLeft}s
                     </Text>
@@ -989,8 +989,8 @@ export default function QuestionScreen() {
                 <View style={styles.timerBarOuter}>
                   <View style={[
                     styles.timerBarInner,
-                    { width: `${(timeLeft / (hasExtendedTimerUpgrade() ? 20 : 15)) * 100}%` },
-                    timeLeft <= 5 && { backgroundColor: theme.colors.error }
+                    { width: `${(timeLeft / (hasExtendedTimerUpgrade() ? 90 : 60)) * 100}%` },
+                    timeLeft <= 10 && { backgroundColor: theme.colors.error }
                   ]} />
                 </View>
 
