@@ -10,28 +10,23 @@ import {
 import { useIsFocused } from '@react-navigation/native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { theme } from '../theme';
-import { getLeaderboard, clearLeaderboard, getStats, clearStats, fetchGlobalLeaderboard } from '../utils/leaderboardHelper';
+import { getLeaderboard, clearLeaderboard, fetchGlobalLeaderboard } from '../utils/leaderboardHelper';
 
 export default function LeaderboardScreen() {
   const isFocused = useIsFocused();
-  const [activeBoard, setActiveBoard] = useState('translation'); // 'translation', 'question', or 'stats'
+  const [activeBoard, setActiveBoard] = useState('translation'); // 'translation' or 'question'
   const [scores, setScores] = useState([]);
-  const [stats, setStats] = useState({});
 
   useEffect(() => {
     if (isFocused) {
-      if (activeBoard === 'stats') {
-        setStats(getStats());
-      } else {
-        // Load local copy immediately
-        setScores(getLeaderboard(activeBoard));
-        // Fetch global copy in background
-        fetchGlobalLeaderboard(activeBoard).then((globalScores) => {
-          if (globalScores) {
-            setScores(globalScores);
-          }
-        });
-      }
+      // Load local copy immediately
+      setScores(getLeaderboard(activeBoard));
+      // Fetch global copy in background
+      fetchGlobalLeaderboard(activeBoard).then((globalScores) => {
+        if (globalScores) {
+          setScores(globalScores);
+        }
+      });
     }
   }, [isFocused, activeBoard]);
 
@@ -81,155 +76,70 @@ export default function LeaderboardScreen() {
             Quiz Questions
           </Text>
         </Pressable>
-        <Pressable 
-          style={[styles.boardToggleButton, activeBoard === 'stats' && styles.activeBoardButton]}
-          onPress={() => setActiveBoard('stats')}
-        >
-          <Ionicons 
-            name="bar-chart-outline" 
-            size={16} 
-            color={activeBoard === 'stats' ? theme.colors.white : theme.colors.textMuted} 
-          />
-          <Text style={[styles.boardToggleText, activeBoard === 'stats' && styles.activeBoardToggleText]}>
-            Statistiques
-          </Text>
-        </Pressable>
       </View>
 
-      {activeBoard === 'stats' ? (
-        <View style={styles.statsContainer}>
-          {/* Translation Stats Card */}
-          <Text style={styles.sectionTitle}>🕹️ JEU DE TRADUCTION</Text>
-          <View style={styles.statsCard}>
-            <View style={styles.statsGrid}>
-              <View style={styles.statsBox}>
-                <Text style={styles.statsVal}>{stats.translationGames || 0}</Text>
-                <Text style={styles.statsLbl}>Parties Jouées</Text>
-              </View>
-              <View style={styles.statsBox}>
-                <Text style={styles.statsVal}>{stats.translationMaxStreak || 0}</Text>
-                <Text style={styles.statsLbl}>Série Max 🔥</Text>
-              </View>
-            </View>
-            <View style={styles.statsGrid}>
-              <View style={styles.statsBox}>
-                <Text style={styles.statsVal}>
-                  {stats.translationTotal > 0
-                    ? `${Math.round((stats.translationCorrect / stats.translationTotal) * 100)}%`
-                    : '0%'}
-                </Text>
-                <Text style={styles.statsLbl}>Précision</Text>
-              </View>
-              <View style={styles.statsBox}>
-                <Text style={styles.statsVal}>
-                  {stats.translationCorrect || 0}/{stats.translationTotal || 0}
-                </Text>
-                <Text style={styles.statsLbl}>Correct/Total</Text>
-              </View>
-            </View>
-          </View>
+      {/* Flashing Arcade Text */}
+      <View style={styles.glowingBar}>
+        <Text style={styles.glowingText}>🏆 MEILLEURES SÉRIES D'AFFILÉE 🏆</Text>
+      </View>
 
-          {/* Questions Stats Card */}
-          <Text style={styles.sectionTitle}>❓ QUIZ DE QUESTIONS</Text>
-          <View style={styles.statsCard}>
-            <View style={styles.statsGrid}>
-              <View style={styles.statsBox}>
-                <Text style={styles.statsVal}>{stats.questionGames || 0}</Text>
-                <Text style={styles.statsLbl}>Parties Jouées</Text>
-              </View>
-              <View style={styles.statsBox}>
-                <Text style={styles.statsVal}>{stats.questionMaxStreak || 0}</Text>
-                <Text style={styles.statsLbl}>Série Max 🔥</Text>
-              </View>
-            </View>
-            <View style={styles.statsGrid}>
-              <View style={styles.statsBox}>
-                <Text style={styles.statsVal}>
-                  {stats.questionTotal > 0
-                    ? `${Math.round((stats.questionCorrect / stats.questionTotal) * 100)}%`
-                    : '0%'}
-                </Text>
-                <Text style={styles.statsLbl}>Précision</Text>
-              </View>
-              <View style={styles.statsBox}>
-                <Text style={styles.statsVal}>
-                  {stats.questionCorrect || 0}/{stats.questionTotal || 0}
-                </Text>
-                <Text style={styles.statsLbl}>Correct/Total</Text>
-              </View>
-            </View>
-          </View>
-
-
+      {/* Leaderboard Card */}
+      <View style={styles.card}>
+        {/* Table Headers */}
+        <View style={styles.tableHeaderRow}>
+          <Text style={[styles.headerCol, styles.colRank]}>RANG</Text>
+          <Text style={[styles.headerCol, styles.colName]}>JOUEUR</Text>
+          <Text style={[styles.headerCol, styles.colStreak, { textAlign: 'right' }]}>SÉRIE</Text>
+          <Text style={[styles.headerCol, styles.colDate, { textAlign: 'right' }]}>DATE</Text>
         </View>
-      ) : (
-        <>
-          {/* Flashing Arcade Text */}
-          <View style={styles.glowingBar}>
-            <Text style={styles.glowingText}>🏆 MEILLEURES SÉRIES D'AFFILÉE 🏆</Text>
-          </View>
 
-          {/* Leaderboard Card */}
-          <View style={styles.card}>
-            {/* Table Headers */}
-            <View style={styles.tableHeaderRow}>
-              <Text style={[styles.headerCol, styles.colRank]}>RANG</Text>
-              <Text style={[styles.headerCol, styles.colName]}>JOUEUR</Text>
-              <Text style={[styles.headerCol, styles.colStreak, { textAlign: 'right' }]}>SÉRIE</Text>
-              <Text style={[styles.headerCol, styles.colDate, { textAlign: 'right' }]}>DATE</Text>
+        <View style={styles.divider} />
+
+        {/* Scores Rows */}
+        {scores.length > 0 ? (
+          scores.map((item, index) => (
+            <View 
+              key={index} 
+              style={[
+                styles.tableRow,
+                index === 0 && styles.tableRowGold,
+                index === scores.length - 1 && { borderBottomWidth: 0 } // No border on last row
+              ]}
+            >
+              <Text style={[styles.cellText, styles.colRank, styles.colRankFont]}>
+                {getRankEmoji(index)} {index + 1}
+              </Text>
+              <Text 
+                className="notranslate"
+                dataSet={{ translate: 'no' }}
+                style={[
+                  styles.cellText, 
+                  styles.colName, 
+                  styles.nameFont,
+                  index === 0 && styles.goldText
+                ]}
+              >
+                {item.name}
+              </Text>
+              <Text style={[styles.cellText, styles.colStreak, styles.streakFont, { textAlign: 'right' }]}>
+                {item.streak} pts
+              </Text>
+              <Text style={[styles.cellText, styles.colDate, styles.dateFont, { textAlign: 'right' }]}>
+                {item.date}
+              </Text>
             </View>
-
-            <View style={styles.divider} />
-
-            {/* Scores Rows */}
-            {scores.length > 0 ? (
-              scores.map((item, index) => (
-                <View 
-                  key={index} 
-                  style={[
-                    styles.tableRow,
-                    index === 0 && styles.tableRowGold,
-                    index === scores.length - 1 && { borderBottomWidth: 0 } // No border on last row
-                  ]}
-                >
-                  <Text style={[styles.cellText, styles.colRank, styles.colRankFont]}>
-                    {getRankEmoji(index)} {index + 1}
-                  </Text>
-                  <Text 
-                    className="notranslate"
-                    dataSet={{ translate: 'no' }}
-                    style={[
-                      styles.cellText, 
-                      styles.colName, 
-                      styles.nameFont,
-                      index === 0 && styles.goldText
-                    ]}
-                  >
-                    {item.name}
-                  </Text>
-                  <Text style={[styles.cellText, styles.colStreak, styles.streakFont, { textAlign: 'right' }]}>
-                    {item.streak} pts
-                  </Text>
-                  <Text style={[styles.cellText, styles.colDate, styles.dateFont, { textAlign: 'right' }]}>
-                    {item.date}
-                  </Text>
-                </View>
-              ))
-            ) : (
-              <View style={styles.emptyTableRow}>
-                <Text style={styles.emptyTableText}>
-                  Aucun score enregistré. Jouez pour inscrire le premier record ! 👾
-                </Text>
-              </View>
-            )}
+          ))
+        ) : (
+          <View style={styles.emptyTableRow}>
+            <Text style={styles.emptyTableText}>
+              Aucun score enregistré. Jouez pour inscrire le premier record ! 👾
+            </Text>
           </View>
+        )}
+      </View>
 
-          {/* Retro Flashing Screen Bottom Detail */}
-          <Text style={styles.blinkText}>INSERT COIN TO PLAY</Text>
-
-
-        </>
-      )}
+      {/* Retro Flashing Screen Bottom Detail */}
+      <Text style={styles.blinkText}>INSERT COIN TO PLAY</Text>
     </ScrollView>
   );
 }
