@@ -650,8 +650,8 @@ export default function QuestionScreen() {
 
   const handleUseHint = () => {
     if (usedHint || showFeedback) return;
-    if (coins < 15) return;
-    const success = spendCoins(15);
+    if (coins < 30) return;
+    const success = spendCoins(30);
     if (success) {
       setCoins(getCoins());
       const currentQ = quizData[quizIndex];
@@ -1025,15 +1025,15 @@ export default function QuestionScreen() {
                   <Pressable
                     style={({ pressed }) => [
                       styles.powerupBtn,
-                      (usedHint || coins < 15) && styles.powerupBtnDisabled,
+                      (usedHint || coins < 30) && styles.powerupBtnDisabled,
                       pressed && styles.powerupBtnPressed
                     ]}
                     onPress={handleUseHint}
-                    disabled={usedHint || coins < 15 || showFeedback}
+                    disabled={usedHint || coins < 30 || showFeedback}
                   >
-                    <Ionicons name="bulb-outline" size={16} color={usedHint || coins < 15 ? theme.colors.textMuted : theme.colors.white} />
-                    <Text style={[styles.powerupBtnText, (usedHint || coins < 15) && styles.powerupBtnTextDisabled]}>
-                      {usedHint ? 'Indice Utilisé' : 'Demander un Indice (15 🪙)'}
+                    <Ionicons name="bulb-outline" size={16} color={usedHint || coins < 30 ? theme.colors.textMuted : theme.colors.white} />
+                    <Text style={[styles.powerupBtnText, (usedHint || coins < 30) && styles.powerupBtnTextDisabled]}>
+                      {usedHint ? 'Indice Utilisé' : 'Demander un Indice (30 🪙)'}
                     </Text>
                   </Pressable>
                 </View>

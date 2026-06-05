@@ -653,8 +653,8 @@ export default function TranslationScreen() {
 
   const handleFiftyFifty = () => {
     if (usedFiftyFifty || showGameFeedback) return;
-    if (coins < 10) return;
-    const success = spendCoins(10);
+    if (coins < 20) return;
+    const success = spendCoins(20);
     if (success) {
       setCoins(getCoins());
       const currentQ = translationGameData[gameIndex];
@@ -1087,15 +1087,15 @@ export default function TranslationScreen() {
                   <Pressable
                     style={({ pressed }) => [
                       styles.powerupBtn,
-                      (usedFiftyFifty || coins < 10) && styles.powerupBtnDisabled,
+                      (usedFiftyFifty || coins < 20) && styles.powerupBtnDisabled,
                       pressed && styles.powerupBtnPressed
                     ]}
                     onPress={handleFiftyFifty}
-                    disabled={usedFiftyFifty || coins < 10 || showGameFeedback}
+                    disabled={usedFiftyFifty || coins < 20 || showGameFeedback}
                   >
-                    <Ionicons name="sparkles-outline" size={16} color={usedFiftyFifty || coins < 10 ? theme.colors.textMuted : theme.colors.white} />
-                    <Text style={[styles.powerupBtnText, (usedFiftyFifty || coins < 10) && styles.powerupBtnTextDisabled]}>
-                      {usedFiftyFifty ? '50/50 Utilisé' : 'Bonus 50/50 (10 🪙)'}
+                    <Ionicons name="sparkles-outline" size={16} color={usedFiftyFifty || coins < 20 ? theme.colors.textMuted : theme.colors.white} />
+                    <Text style={[styles.powerupBtnText, (usedFiftyFifty || coins < 20) && styles.powerupBtnTextDisabled]}>
+                      {usedFiftyFifty ? '50/50 Utilisé' : 'Bonus 50/50 (20 🪙)'}
                     </Text>
                   </Pressable>
                 </View>

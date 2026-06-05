@@ -61,14 +61,14 @@ export default function ShopScreen() {
           style={({ pressed }) => [
             styles.buyBtn,
             hasExtraLifeUpgrade() && styles.buyBtnOwned,
-            (coins < 50 && !hasExtraLifeUpgrade()) && styles.buyBtnDisabled,
+            (coins < 100 && !hasExtraLifeUpgrade()) && styles.buyBtnDisabled,
             pressed && styles.buyBtnPressed
           ]}
-          onPress={() => handleBuyUpgrade('extra_life', 50)}
-          disabled={hasExtraLifeUpgrade() || coins < 50}
+          onPress={() => handleBuyUpgrade('extra_life', 100)}
+          disabled={hasExtraLifeUpgrade() || coins < 100}
         >
           <Text style={styles.buyBtnText}>
-            {hasExtraLifeUpgrade() ? 'ACQUIS' : '50 🪙'}
+            {hasExtraLifeUpgrade() ? 'ACQUIS' : '100 🪙'}
           </Text>
         </Pressable>
       </View>
@@ -86,14 +86,14 @@ export default function ShopScreen() {
           style={({ pressed }) => [
             styles.buyBtn,
             hasExtendedTimerUpgrade() && styles.buyBtnOwned,
-            (coins < 75 && !hasExtendedTimerUpgrade()) && styles.buyBtnDisabled,
+            (coins < 150 && !hasExtendedTimerUpgrade()) && styles.buyBtnDisabled,
             pressed && styles.buyBtnPressed
           ]}
-          onPress={() => handleBuyUpgrade('extended_timer', 75)}
-          disabled={hasExtendedTimerUpgrade() || coins < 75}
+          onPress={() => handleBuyUpgrade('extended_timer', 150)}
+          disabled={hasExtendedTimerUpgrade() || coins < 150}
         >
           <Text style={styles.buyBtnText}>
-            {hasExtendedTimerUpgrade() ? 'ACQUIS' : '75 🪙'}
+            {hasExtendedTimerUpgrade() ? 'ACQUIS' : '150 🪙'}
           </Text>
         </Pressable>
       </View>
@@ -111,14 +111,14 @@ export default function ShopScreen() {
           style={({ pressed }) => [
             styles.buyBtn,
             hasDoubleCoinsUpgrade() && styles.buyBtnOwned,
-            (coins < 100 && !hasDoubleCoinsUpgrade()) && styles.buyBtnDisabled,
+            (coins < 200 && !hasDoubleCoinsUpgrade()) && styles.buyBtnDisabled,
             pressed && styles.buyBtnPressed
           ]}
-          onPress={() => handleBuyUpgrade('double_coins', 100)}
-          disabled={hasDoubleCoinsUpgrade() || coins < 100}
+          onPress={() => handleBuyUpgrade('double_coins', 200)}
+          disabled={hasDoubleCoinsUpgrade() || coins < 200}
         >
           <Text style={styles.buyBtnText}>
-            {hasDoubleCoinsUpgrade() ? 'ACQUIS' : '100 🪙'}
+            {hasDoubleCoinsUpgrade() ? 'ACQUIS' : '200 🪙'}
           </Text>
         </Pressable>
       </View>
