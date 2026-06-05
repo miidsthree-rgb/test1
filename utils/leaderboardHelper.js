@@ -1,9 +1,106 @@
 import { Platform } from 'react-native';
 
 const LEADERBOARD_KEY_PREFIX = 'arcade_leaderboard_v3_';
+const APP_KEY = 'i6ezx7n2'; // Unique AppKey on keyvalue.immanuel.co
 
 // Start empty so only real players score
 const defaultLeaderboard = [];
+
+// Helper: base64 url-safe encoding (handles accents correctly)
+const base64UrlEncode = (str) => {
+  try {
+    const utf8BtoA = (s) => {
+      return btoa(encodeURIComponent(s).replace(/%([0-9A-F]{2})/g, (match, p1) => {
+        return String.fromCharCode(parseInt(p1, 16));
+      }));
+    };
+    return utf8BtoA(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+  } catch (e) {
+    return '';
+  }
+};
+
+// Helper: base64 url-safe decoding
+const base64UrlDecode = (str) => {
+  try {
+    let base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+    while (base64.length % 4) {
+      base64 += '=';
+    }
+    const utf8AtoB = (s) => {
+      return decodeURIComponent(Array.prototype.map.call(atob(s), (c) => {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+    };
+    return utf8AtoB(base64);
+  } catch (e) {
+    return '[]';
+  }
+};
+
+export const fetchGlobalLeaderboard = async (gameType = 'translation') => {
+  if (Platform.OS === 'web') {
+    try {
+      const response = await fetch(`https://keyvalue.immanuel.co/api/KeyVal/GetValue/${APP_KEY}/${gameType}_leaderboard`);
+      if (response.ok) {
+        const text = await response.text();
+        const cleanedText = text.replace(/"/g, '').trim(); // Remove surrounding quotes
+        if (cleanedText) {
+          const decoded = base64UrlDecode(cleanedText);
+          const parsed = JSON.parse(decoded);
+          if (Array.isArray(parsed)) {
+            const key = `${LEADERBOARD_KEY_PREFIX}${gameType}`;
+            localStorage.setItem(key, JSON.stringify(parsed));
+            return parsed;
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to fetch global leaderboard:', e);
+    }
+  }
+  return null;
+};
+
+export const uploadLeaderboard = async (gameType, board) => {
+  if (Platform.OS === 'web') {
+    try {
+      const str = JSON.stringify(board);
+      const encoded = base64UrlEncode(str);
+      const url = `https://keyvalue.immanuel.co/api/KeyVal/UpdateValue/${APP_KEY}/${gameType}_leaderboard/${encoded}`;
+      await fetch(url, { method: 'POST' });
+    } catch (e) {
+      console.warn('Failed to upload global leaderboard:', e);
+    }
+  }
+};
+
+const syncAndUploadHighScore = async (newEntry, gameType) => {
+  try {
+    const globalBoard = await fetchGlobalLeaderboard(gameType);
+    const boardToUse = globalBoard || getLeaderboard(gameType);
+    
+    const exists = boardToUse.some(entry => 
+      entry.name === newEntry.name && 
+      entry.streak === newEntry.streak && 
+      entry.date === newEntry.date
+    );
+    
+    if (!exists) {
+      const mergedBoard = [...boardToUse, newEntry]
+        .sort((a, b) => b.streak - a.streak)
+        .slice(0, 5);
+      
+      const key = `${LEADERBOARD_KEY_PREFIX}${gameType}`;
+      localStorage.setItem(key, JSON.stringify(mergedBoard));
+      await uploadLeaderboard(gameType, mergedBoard);
+    } else {
+      await uploadLeaderboard(gameType, boardToUse);
+    }
+  } catch (e) {
+    console.warn('Sync and upload failed:', e);
+  }
+};
 
 export const getLeaderboard = (gameType = 'translation') => {
   if (Platform.OS === 'web') {
@@ -27,7 +124,6 @@ export const checkHighScore = (streak, gameType = 'translation') => {
   if (streak <= 0) return false;
   const board = getLeaderboard(gameType);
   if (board.length < 5) return true;
-  // Compare with the 5th (last) entry on the leaderboard
   return streak > board[board.length - 1].streak;
 };
 
@@ -37,19 +133,20 @@ export const addHighScore = (name, streak, gameType = 'translation') => {
   const dateStr = `${today.getDate().toString().padStart(2, '0')}/${(today.getMonth() + 1).toString().padStart(2, '0')}/${today.getFullYear()}`;
   
   const newEntry = {
-    name: name.trim() ? name.trim().slice(0, 12) : 'ANONYME', // Max 12 characters
+    name: name.trim() ? name.trim().slice(0, 12) : 'ANONYME',
     streak: streak,
     date: dateStr
   };
   
   const newBoard = [...board, newEntry]
     .sort((a, b) => b.streak - a.streak)
-    .slice(0, 5); // Keep top 5
+    .slice(0, 5);
     
   if (Platform.OS === 'web') {
     try {
       const key = `${LEADERBOARD_KEY_PREFIX}${gameType}`;
       localStorage.setItem(key, JSON.stringify(newBoard));
+      syncAndUploadHighScore(newEntry, gameType);
     } catch (e) {}
   }
   
@@ -61,6 +158,7 @@ export const clearLeaderboard = (gameType = 'translation') => {
     try {
       const key = `${LEADERBOARD_KEY_PREFIX}${gameType}`;
       localStorage.setItem(key, JSON.stringify(defaultLeaderboard));
+      uploadLeaderboard(gameType, defaultLeaderboard);
     } catch (e) {}
   }
   return defaultLeaderboard;

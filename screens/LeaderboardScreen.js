@@ -10,7 +10,7 @@ import {
 import { useIsFocused } from '@react-navigation/native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { theme } from '../theme';
-import { getLeaderboard, clearLeaderboard, getStats, clearStats } from '../utils/leaderboardHelper';
+import { getLeaderboard, clearLeaderboard, getStats, clearStats, fetchGlobalLeaderboard } from '../utils/leaderboardHelper';
 
 export default function LeaderboardScreen() {
   const isFocused = useIsFocused();
@@ -23,7 +23,14 @@ export default function LeaderboardScreen() {
       if (activeBoard === 'stats') {
         setStats(getStats());
       } else {
+        // Load local copy immediately
         setScores(getLeaderboard(activeBoard));
+        // Fetch global copy in background
+        fetchGlobalLeaderboard(activeBoard).then((globalScores) => {
+          if (globalScores) {
+            setScores(globalScores);
+          }
+        });
       }
     }
   }, [isFocused, activeBoard]);
