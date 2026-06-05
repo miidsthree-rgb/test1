@@ -35,10 +35,7 @@ export default function LeaderboardScreen() {
     }
   }, [isFocused, activeBoard]);
 
-  const handleReset = () => {
-    const resetScores = clearLeaderboard(activeBoard);
-    setScores(resetScores);
-  };
+
 
   const handleResetStats = () => {
     const cleared = clearStats();
@@ -247,17 +244,7 @@ export default function LeaderboardScreen() {
           {/* Retro Flashing Screen Bottom Detail */}
           <Text style={styles.blinkText}>INSERT COIN TO PLAY</Text>
 
-          {/* Reset Board Button */}
-          <Pressable 
-            style={({ pressed }) => [
-              styles.resetButton,
-              pressed && styles.resetButtonPressed
-            ]}
-            onPress={handleReset}
-          >
-            <Ionicons name="trash-outline" size={16} color={theme.colors.textMuted} />
-            <Text style={styles.resetButtonText}>Réinitialiser les scores</Text>
-          </Pressable>
+
         </>
       )}
     </ScrollView>
