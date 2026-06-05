@@ -80,23 +80,29 @@ const syncAndUploadHighScore = async (newEntry, gameType) => {
     const globalBoard = await fetchGlobalLeaderboard(gameType);
     const boardToUse = globalBoard || getLeaderboard(gameType);
     
-    const exists = boardToUse.some(entry => 
-      entry.name === newEntry.name && 
-      entry.streak === newEntry.streak && 
-      entry.date === newEntry.date
+    // Check if there is an existing entry with the same name (case-insensitive)
+    const existingIndex = boardToUse.findIndex(entry => 
+      entry.name.toLowerCase() === newEntry.name.toLowerCase()
     );
     
-    if (!exists) {
-      const mergedBoard = [...boardToUse, newEntry]
-        .sort((a, b) => b.streak - a.streak)
-        .slice(0, 5);
-      
-      const key = `${LEADERBOARD_KEY_PREFIX}${gameType}`;
-      localStorage.setItem(key, JSON.stringify(mergedBoard));
-      await uploadLeaderboard(gameType, mergedBoard);
+    let mergedBoard = [...boardToUse];
+    if (existingIndex !== -1) {
+      // If the new score is higher, replace it
+      if (newEntry.streak > boardToUse[existingIndex].streak) {
+        mergedBoard[existingIndex] = newEntry;
+      }
     } else {
-      await uploadLeaderboard(gameType, boardToUse);
+      mergedBoard.push(newEntry);
     }
+    
+    // Sort and keep top 5
+    mergedBoard = mergedBoard
+      .sort((a, b) => b.streak - a.streak)
+      .slice(0, 5);
+      
+    const key = `${LEADERBOARD_KEY_PREFIX}${gameType}`;
+    localStorage.setItem(key, JSON.stringify(mergedBoard));
+    await uploadLeaderboard(gameType, mergedBoard);
   } catch (e) {
     console.warn('Sync and upload failed:', e);
   }
@@ -132,13 +138,32 @@ export const addHighScore = (name, streak, gameType = 'translation') => {
   const today = new Date();
   const dateStr = `${today.getDate().toString().padStart(2, '0')}/${(today.getMonth() + 1).toString().padStart(2, '0')}/${today.getFullYear()}`;
   
+  const trimmedName = name.trim();
+  const cleanName = trimmedName ? trimmedName.slice(0, 12) : 'ANONYME';
+  
   const newEntry = {
-    name: name.trim() ? name.trim().slice(0, 12) : 'ANONYME',
+    name: cleanName,
     streak: streak,
     date: dateStr
   };
   
-  const newBoard = [...board, newEntry]
+  // Check if there is an existing entry with the same name (case-insensitive)
+  const existingIndex = board.findIndex(entry => 
+    entry.name.toLowerCase() === cleanName.toLowerCase()
+  );
+  
+  let newBoard = [...board];
+  if (existingIndex !== -1) {
+    // If the new score is higher, replace it
+    if (streak > board[existingIndex].streak) {
+      newBoard[existingIndex] = newEntry;
+    }
+  } else {
+    newBoard.push(newEntry);
+  }
+  
+  // Sort and keep top 5
+  newBoard = newBoard
     .sort((a, b) => b.streak - a.streak)
     .slice(0, 5);
     
