@@ -1,22 +1,22 @@
 import { Platform } from 'react-native';
 
-// Ultra-retro 8-bit / CRT Terminal theme tokens
+// Ultra-retro 8-bit / Neon Arcade theme tokens
 export const theme = {
   colors: {
-    primary: '#39FF14',        // Pure Phosphor Neon Green
-    primaryDark: '#059669',    
-    secondary: '#00FFFF',      // Retro Cyber Cyan
-    accentPink: '#FF007F',     // Neon Pink / Magenta
-    background: '#000000',     // Perfect Black Screen
-    cardBg: '#050D0A',         // Very dark phosphor green terminal background
-    cardBgElevated: '#0D2018', // Active selection background
-    text: '#39FF14',           // Phosphor Green Text
-    textMuted: '#10B981',      // Dimmed green text
-    border: '#39FF14',         // Phosphor Green borders
-    borderMuted: '#065F46',    
-    success: '#00FFFF',        
-    error: '#FF3333',          // Retro Neon Red
-    warning: '#FFFF00',        // Retro Yellow
+    primary: '#00FFFF',        // Electric Neon Cyan
+    primaryDark: '#00B3B3',    
+    secondary: '#FF007F',      // Hot Neon Pink
+    accentPink: '#FF007F',     
+    background: '#090714',     // Deep space cabinet navy/black
+    cardBg: '#120F24',         // Cabinet dark violet
+    cardBgElevated: '#1C1838', 
+    text: '#00FFFF',           // Cyan terminal text
+    textMuted: '#6F669B',      // Soft lavender/purple
+    border: '#FF007F',         // Hot Neon Pink border
+    borderMuted: '#292152',    
+    success: '#39FF14',        // Bright green for success
+    error: '#FF2A2A',          // Vibrant red for error
+    warning: '#FFFF00',        // Pacman yellow
     white: '#FFFFFF',
     overlay: 'rgba(0, 0, 0, 0.8)',
   },
