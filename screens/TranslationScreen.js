@@ -992,7 +992,7 @@ export default function TranslationScreen() {
                         }
                       ]}
                     >
-                      Rang Valorant : {rankInfo.name} 🎖️
+                      Rank : {rankInfo.name} 🎖️
                     </Text>
                   );
                 })()}

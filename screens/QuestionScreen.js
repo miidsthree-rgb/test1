@@ -910,7 +910,7 @@ export default function QuestionScreen() {
                         }
                       ]}
                     >
-                      Rang Valorant : {rankInfo.name} 🎖️
+                      Rank : {rankInfo.name} 🎖️
                     </Text>
                   );
                 })()}
