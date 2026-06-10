@@ -18,7 +18,7 @@ export default function LeaderboardScreen() {
   const [scores, setScores] = useState([]);
 
   useEffect(() => {
-    if (isFocused) {
+    if (isFocused && activeBoard !== 'ranks') {
       // Load local copy immediately
       setScores(getLeaderboard(activeBoard));
       // Fetch global copy in background
@@ -76,85 +76,139 @@ export default function LeaderboardScreen() {
             Quiz Questions
           </Text>
         </Pressable>
+        <Pressable 
+          style={[styles.boardToggleButton, activeBoard === 'ranks' && styles.activeBoardButton]}
+          onPress={() => setActiveBoard('ranks')}
+        >
+          <Ionicons 
+            name="medal-outline" 
+            size={16} 
+            color={activeBoard === 'ranks' ? theme.colors.white : theme.colors.textMuted} 
+          />
+          <Text style={[styles.boardToggleText, activeBoard === 'ranks' && styles.activeBoardToggleText]}>
+            Guide Rangs
+          </Text>
+        </Pressable>
       </View>
 
       {/* Flashing Arcade Text */}
       <View style={styles.glowingBar}>
-        <Text style={styles.glowingText}>🏆 MEILLEURES SÉRIES D'AFFILÉE 🏆</Text>
+        <Text style={styles.glowingText}>
+          {activeBoard === 'ranks' ? '🎖️ PANTHEON DES RANGS 🎖️' : '🏆 MEILLEURES SÉRIES D\'AFFILÉE 🏆'}
+        </Text>
       </View>
 
-      {/* Leaderboard Card */}
-      <View style={styles.card}>
-        {/* Table Headers */}
-        <View style={styles.tableHeaderRow}>
-          <Text style={[styles.headerCol, styles.colRank]}>RANG</Text>
-          <Text style={[styles.headerCol, styles.colName]}>JOUEUR</Text>
-          <Text style={[styles.headerCol, styles.colStreak, { textAlign: 'right' }]}>SÉRIE</Text>
-          <Text style={[styles.headerCol, styles.colDate, { textAlign: 'right' }]}>DATE</Text>
-        </View>
-
-        <View style={styles.divider} />
-
-        {/* Scores Rows */}
-        {scores.length > 0 ? (
-          scores.map((item, index) => (
+      {activeBoard === 'ranks' ? (
+        <View style={styles.card}>
+          <Text style={styles.ranksTitle}>GUIDE DES RANGS</Text>
+          <Text style={styles.ranksSubtitle}>
+            Atteignez les séries de réponses correctes requises pour obtenir votre rang :
+          </Text>
+          
+          <View style={styles.divider} />
+          
+          {[
+            { name: 'RADIANT', range: '46+ pts', color: '#F59E0B', badge: '👑' },
+            { name: 'IMMORTEL', range: '36-45 pts', color: '#EF4444', badge: '🔴' },
+            { name: 'ASCENDANT', range: '28-35 pts', color: '#10B981', badge: '🟢' },
+            { name: 'DIAMANT', range: '21-27 pts', color: '#D946EF', badge: '💎' },
+            { name: 'PLATINE', range: '15-20 pts', color: '#06B6D4', badge: '💠' },
+            { name: 'OR', range: '10-14 pts', color: '#FBBF24', badge: '⭐' },
+            { name: 'ARGENT', range: '6-9 pts', color: '#D1D5DB', badge: '⚪' },
+            { name: 'BRONZE', range: '3-5 pts', color: '#B45309', badge: '🟤' },
+            { name: 'FER', range: '0-2 pts', color: '#9CA3AF', badge: '⚙️' }
+          ].map((r, index, arr) => (
             <View 
-              key={index} 
+              key={r.name} 
               style={[
                 styles.tableRow,
-                index === 0 && styles.tableRowGold,
-                index === scores.length - 1 && { borderBottomWidth: 0 } // No border on last row
+                { paddingVertical: 12 },
+                index === arr.length - 1 && { borderBottomWidth: 0 }
               ]}
             >
-              <Text style={[styles.cellText, styles.colRank, styles.colRankFont]}>
-                {getRankEmoji(index)} {index + 1}
+              <Text style={[styles.cellText, { flex: 1.5, color: r.color, fontFamily: theme.fonts.retro, fontWeight: 'bold' }]}>
+                {r.badge} {r.name}
               </Text>
-              <View style={[styles.colName, { flexDirection: 'column', justifyContent: 'center' }]}>
-                <Text 
-                  className="notranslate"
-                  dataSet={{ translate: 'no' }}
-                  style={[
-                    styles.cellText, 
-                    styles.nameFont,
-                    index === 0 && styles.goldText
-                  ]}
-                >
-                  {item.name}
-                </Text>
-                {(() => {
-                  const rankInfo = getValorantRank(item.streak);
-                  return (
-                    <Text 
-                      style={{ 
-                        color: rankInfo.color, 
-                        fontSize: 10, 
-                        fontFamily: theme.fonts.retro,
-                        fontWeight: 'bold',
-                        marginTop: 2,
-                        letterSpacing: 1
-                      }}
-                    >
-                      {rankInfo.name}
-                    </Text>
-                  );
-                })()}
-              </View>
-              <Text style={[styles.cellText, styles.colStreak, styles.streakFont, { textAlign: 'right' }]}>
-                {item.streak} pts
-              </Text>
-              <Text style={[styles.cellText, styles.colDate, styles.dateFont, { textAlign: 'right' }]}>
-                {item.date}
+              <Text style={[styles.cellText, { flex: 1, textAlign: 'right', fontFamily: theme.fonts.retro, color: theme.colors.white }]}>
+                {r.range}
               </Text>
             </View>
-          ))
-        ) : (
-          <View style={styles.emptyTableRow}>
-            <Text style={styles.emptyTableText}>
-              Aucun score enregistré. Jouez pour inscrire le premier record ! 👾
-            </Text>
+          ))}
+        </View>
+      ) : (
+        /* Leaderboard Card */
+        <View style={styles.card}>
+          {/* Table Headers */}
+          <View style={styles.tableHeaderRow}>
+            <Text style={[styles.headerCol, styles.colRank]}>RANG</Text>
+            <Text style={[styles.headerCol, styles.colName]}>JOUEUR</Text>
+            <Text style={[styles.headerCol, styles.colStreak, { textAlign: 'right' }]}>SÉRIE</Text>
+            <Text style={[styles.headerCol, styles.colDate, { textAlign: 'right' }]}>DATE</Text>
           </View>
-        )}
-      </View>
+
+          <View style={styles.divider} />
+
+          {/* Scores Rows */}
+          {scores.length > 0 ? (
+            scores.map((item, index) => (
+              <View 
+                key={index} 
+                style={[
+                  styles.tableRow,
+                  index === 0 && styles.tableRowGold,
+                  index === scores.length - 1 && { borderBottomWidth: 0 } // No border on last row
+                ]}
+              >
+                <Text style={[styles.cellText, styles.colRank, styles.colRankFont]}>
+                  {getRankEmoji(index)} {index + 1}
+                </Text>
+                <View style={[styles.colName, { flexDirection: 'column', justifyContent: 'center' }]}>
+                  <Text 
+                    className="notranslate"
+                    dataSet={{ translate: 'no' }}
+                    style={[
+                      styles.cellText, 
+                      styles.nameFont,
+                      index === 0 && styles.goldText
+                    ]}
+                  >
+                    {item.name}
+                  </Text>
+                  {(() => {
+                    const rankInfo = getValorantRank(item.streak);
+                    return (
+                      <Text 
+                        style={{ 
+                          color: rankInfo.color, 
+                          fontSize: 10, 
+                          fontFamily: theme.fonts.retro,
+                          fontWeight: 'bold',
+                          marginTop: 2,
+                          letterSpacing: 1
+                        }}
+                      >
+                        {rankInfo.name}
+                      </Text>
+                    );
+                  })()}
+                </View>
+                <Text style={[styles.cellText, styles.colStreak, styles.streakFont, { textAlign: 'right' }]}>
+                  {item.streak} pts
+                </Text>
+                <Text style={[styles.cellText, styles.colDate, styles.dateFont, { textAlign: 'right' }]}>
+                  {item.date}
+                </Text>
+              </View>
+            ))
+          ) : (
+            <View style={styles.emptyTableRow}>
+              <Text style={styles.emptyTableText}>
+                Aucun score enregistré. Jouez pour inscrire le premier record ! 👾
+              </Text>
+            </View>
+          )}
+        </View>
+      )}
 
       {/* Retro Flashing Screen Bottom Detail */}
       <Text style={styles.blinkText}>INSERT COIN TO PLAY</Text>
@@ -415,5 +469,22 @@ const styles = StyleSheet.create({
     fontSize: 11,
     marginTop: 4,
     textAlign: 'center',
+  },
+  ranksTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: theme.colors.white,
+    textAlign: 'center',
+    fontFamily: theme.fonts.retro,
+    letterSpacing: 2,
+    marginTop: theme.spacing.xs,
+  },
+  ranksSubtitle: {
+    color: theme.colors.textMuted,
+    fontSize: 12,
+    textAlign: 'center',
+    marginTop: theme.spacing.xs,
+    lineHeight: 18,
+    marginBottom: theme.spacing.sm,
   },
 });
