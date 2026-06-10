@@ -10,7 +10,7 @@ import {
 import { useIsFocused } from '@react-navigation/native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { theme } from '../theme';
-import { getLeaderboard, clearLeaderboard, fetchGlobalLeaderboard } from '../utils/leaderboardHelper';
+import { getLeaderboard, clearLeaderboard, fetchGlobalLeaderboard, getValorantRank } from '../utils/leaderboardHelper';
 
 export default function LeaderboardScreen() {
   const isFocused = useIsFocused();
@@ -109,18 +109,36 @@ export default function LeaderboardScreen() {
               <Text style={[styles.cellText, styles.colRank, styles.colRankFont]}>
                 {getRankEmoji(index)} {index + 1}
               </Text>
-              <Text 
-                className="notranslate"
-                dataSet={{ translate: 'no' }}
-                style={[
-                  styles.cellText, 
-                  styles.colName, 
-                  styles.nameFont,
-                  index === 0 && styles.goldText
-                ]}
-              >
-                {item.name}
-              </Text>
+              <View style={[styles.colName, { flexDirection: 'column', justifyContent: 'center' }]}>
+                <Text 
+                  className="notranslate"
+                  dataSet={{ translate: 'no' }}
+                  style={[
+                    styles.cellText, 
+                    styles.nameFont,
+                    index === 0 && styles.goldText
+                  ]}
+                >
+                  {item.name}
+                </Text>
+                {(() => {
+                  const rankInfo = getValorantRank(item.streak);
+                  return (
+                    <Text 
+                      style={{ 
+                        color: rankInfo.color, 
+                        fontSize: 10, 
+                        fontFamily: theme.fonts.retro,
+                        fontWeight: 'bold',
+                        marginTop: 2,
+                        letterSpacing: 1
+                      }}
+                    >
+                      {rankInfo.name}
+                    </Text>
+                  );
+                })()}
+              </View>
               <Text style={[styles.cellText, styles.colStreak, styles.streakFont, { textAlign: 'right' }]}>
                 {item.streak} pts
               </Text>

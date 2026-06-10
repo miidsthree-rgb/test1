@@ -330,3 +330,16 @@ export const buyUpgrade = (upgradeId, cost) => {
   }
   return false;
 };
+
+export const getValorantRank = (streak) => {
+  if (streak >= 46) return { name: 'RADIANT', color: '#F59E0B' };
+  if (streak >= 36) return { name: 'IMMORTEL', color: '#EF4444' };
+  if (streak >= 28) return { name: 'ASCENDANT', color: '#10B981' };
+  if (streak >= 21) return { name: 'DIAMANT', color: '#D946EF' };
+  if (streak >= 15) return { name: 'PLATINE', color: '#06B6D4' };
+  if (streak >= 10) return { name: 'OR', color: '#FBBF24' };
+  if (streak >= 6) return { name: 'ARGENT', color: '#D1D5DB' };
+  if (streak >= 3) return { name: 'BRONZE', color: '#B45309' };
+  return { name: 'FER', color: '#9CA3AF' };
+};
+

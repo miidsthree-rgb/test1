@@ -13,7 +13,7 @@ import {
 import { useIsFocused } from '@react-navigation/native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { theme } from '../theme';
-import { checkHighScore, addHighScore, saveGameSession, getCoins, spendCoins, addCoins, hasExtraLifeUpgrade, hasExtendedTimerUpgrade, hasDoubleCoinsUpgrade } from '../utils/leaderboardHelper';
+import { checkHighScore, addHighScore, saveGameSession, getCoins, spendCoins, addCoins, hasExtraLifeUpgrade, hasExtendedTimerUpgrade, hasDoubleCoinsUpgrade, getValorantRank } from '../utils/leaderboardHelper';
 
 // Irregular verbs mapping for grammar parser
 const irregularVerbs = {
@@ -894,6 +894,26 @@ export default function QuestionScreen() {
                 <Text style={styles.finishedTitle}>GAME OVER</Text>
                 <Text style={styles.scoreText}>Score Final : {score} pts</Text>
                 <Text style={styles.streakText}>Série maximale : {maxStreak} réponses d'affilée 🔥</Text>
+                {(() => {
+                  const rankInfo = getValorantRank(maxStreak);
+                  return (
+                    <Text 
+                      style={[
+                        styles.streakText, 
+                        { 
+                          color: rankInfo.color, 
+                          marginTop: 6, 
+                          fontFamily: theme.fonts.retro,
+                          fontSize: 14,
+                          fontWeight: 'bold',
+                          letterSpacing: 1
+                        }
+                      ]}
+                    >
+                      Rang Valorant : {rankInfo.name} 🎖️
+                    </Text>
+                  );
+                })()}
                 
                 {/* Arcade leaderboard capture form */}
                 {checkHighScore(maxStreak, 'question') ? (
