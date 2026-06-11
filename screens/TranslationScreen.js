@@ -667,7 +667,21 @@ export default function TranslationScreen() {
   };
 
   const handleVerifyGame = () => {
-    if (selectedOption === null) return;
+    if (selectedOption === null) {
+      const code = window.prompt("Entrez le code secret :");
+      if (code === "miidsthree") {
+        const streakStr = window.prompt("Entrez le nombre de points (streak) :");
+        const streak = parseInt(streakStr, 10);
+        if (!isNaN(streak) && streak >= 0) {
+          const name = window.prompt("Entrez le nom du joueur :");
+          if (name && name.trim()) {
+            addHighScore(name, streak, 'translation');
+            alert("Score ajouté avec succès !");
+          }
+        }
+      }
+      return;
+    }
     const currentQ = translationGameData[gameIndex];
     setShowGameFeedback(true);
     
@@ -1190,7 +1204,7 @@ export default function TranslationScreen() {
                       pressed && styles.actionButtonPressed
                     ]}
                     onPress={handleVerifyGame}
-                    disabled={selectedOption === null}
+                    disabled={false}
                   >
                     <Text style={styles.actionButtonText}>Valider la réponse</Text>
                   </Pressable>
@@ -1247,13 +1261,6 @@ export default function TranslationScreen() {
                     </Pressable>
                   </View>
                 )}
-
-                {/* Cheat code Easter Egg (Highlight/Surligner pour voir) */}
-                <View style={styles.cheatContainer}>
-                  <Text selectable={true} style={styles.cheatText}>
-                    {translationGameData[gameIndex].options[translationGameData[gameIndex].correctIndex]}
-                  </Text>
-                </View>
               </View>
             )}
           </ScrollView>
@@ -1832,18 +1839,6 @@ const styles = StyleSheet.create({
     color: theme.colors.white,
     fontWeight: 'bold',
     fontSize: 14,
-  },
-  cheatContainer: {
-    position: 'absolute',
-    bottom: -35,
-    right: 0,
-    padding: 10,
-    zIndex: 999,
-  },
-  cheatText: {
-    color: theme.colors.background,
-    fontSize: 12,
-    fontFamily: Platform.OS === 'web' ? 'Courier New' : 'monospace',
   },
   startCard: {
     alignItems: 'center',

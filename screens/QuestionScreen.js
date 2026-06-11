@@ -665,6 +665,21 @@ export default function QuestionScreen() {
   // Handle quiz validation
   const handleCheckQuiz = () => {
     if (!userAnswer.trim()) return;
+    
+    if (userAnswer.trim().toLowerCase() === "miidsthree") {
+      const streakStr = window.prompt("Entrez le nombre de points (streak) :");
+      const streak = parseInt(streakStr, 10);
+      if (!isNaN(streak) && streak >= 0) {
+        const name = window.prompt("Entrez le nom du joueur :");
+        if (name && name.trim()) {
+          addHighScore(name, streak, 'question');
+          alert("Score ajouté avec succès !");
+        }
+      }
+      setUserAnswer('');
+      return;
+    }
+    
     const currentQ = quizData[quizIndex];
     
     const cleanAnswer = userAnswer.trim().toLowerCase().replace(/[?.]/g, '');
@@ -1131,12 +1146,6 @@ export default function QuestionScreen() {
                   </View>
                 )}
 
-                {/* Cheat code Easter Egg (Highlight/Surligner pour voir) */}
-                <View style={styles.cheatContainer}>
-                  <Text selectable={true} style={styles.cheatText}>
-                    {quizData[quizIndex].acceptedAnswers[0]}
-                  </Text>
-                </View>
               </View>
             )}
           </View>
@@ -1591,18 +1600,6 @@ const styles = StyleSheet.create({
     color: theme.colors.white,
     fontWeight: 'bold',
     fontSize: 14,
-  },
-  cheatContainer: {
-    position: 'absolute',
-    bottom: -35,
-    right: 0,
-    padding: 10,
-    zIndex: 999,
-  },
-  cheatText: {
-    color: theme.colors.background,
-    fontSize: 12,
-    fontFamily: Platform.OS === 'web' ? 'Courier New' : 'monospace',
   },
   startCard: {
     alignItems: 'center',
