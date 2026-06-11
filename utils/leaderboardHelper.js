@@ -123,7 +123,15 @@ export const getLeaderboard = (gameType = 'translation') => {
       const key = `${LEADERBOARD_KEY_PREFIX}${gameType}`;
       const data = localStorage.getItem(key);
       if (data) {
-        return JSON.parse(data);
+        const parsed = JSON.parse(data);
+        if (Array.isArray(parsed)) {
+          const cleaned = parsed.filter(item => (item.name || '').toLowerCase().trim() !== 'test');
+          if (cleaned.length !== parsed.length) {
+            localStorage.setItem(key, JSON.stringify(cleaned));
+          }
+          return cleaned;
+        }
+        return parsed;
       } else {
         localStorage.setItem(key, JSON.stringify(defaultLeaderboard));
         return defaultLeaderboard;
