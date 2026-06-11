@@ -479,6 +479,7 @@ export default function TranslationScreen() {
   // Arcade Streak States
   const [currentStreak, setCurrentStreak] = useState(0);
   const [maxStreak, setMaxStreak] = useState(0);
+  const [playerName, setPlayerName] = useState('');
   const [scoreSaved, setScoreSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
