@@ -41,7 +41,9 @@ const base64UrlDecode = (str) => {
 export const fetchGlobalLeaderboard = async (gameType = 'translation') => {
   if (Platform.OS === 'web') {
     try {
-      const response = await fetch(`https://keyvalue.immanuel.co/api/KeyVal/GetValue/${APP_KEY}/${gameType}_leaderboard`);
+      const response = await fetch(`https://keyvalue.immanuel.co/api/KeyVal/GetValue/${APP_KEY}/${gameType}_leaderboard?t=${Date.now()}`, {
+        cache: 'no-store'
+      });
       if (response.ok) {
         const text = await response.text();
         const cleanedText = text.replace(/"/g, '').trim(); // Remove surrounding quotes
