@@ -30,6 +30,19 @@ export default function LeaderboardScreen() {
     }
   }, [isFocused, activeBoard]);
 
+  const handleForceSync = () => {
+    localStorage.removeItem(`arcade_leaderboard_v3_${activeBoard}`);
+    setScores([]);
+    fetchGlobalLeaderboard(activeBoard).then((globalScores) => {
+      if (globalScores) {
+        setScores(globalScores);
+        Alert.alert("Synchronisation", "Le classement a été synchronisé avec le serveur !");
+      } else {
+        Alert.alert("Synchronisation", "Mémoire locale vidée. Le serveur est actuellement inaccessible.");
+      }
+    });
+  };
+
 
   const getRankEmoji = (index) => {
     switch (index) {
@@ -208,6 +221,20 @@ export default function LeaderboardScreen() {
             </View>
           )}
         </View>
+      )}
+
+      {activeBoard !== 'ranks' && (
+        <Pressable
+          style={({ pressed }) => [
+            styles.resetButton,
+            pressed && styles.resetButtonPressed,
+            { width: '80%', alignSelf: 'center', marginBottom: 20 }
+          ]}
+          onPress={handleForceSync}
+        >
+          <Ionicons name="refresh-outline" size={16} color={theme.colors.textMuted} />
+          <Text style={styles.resetButtonText}>FORCER SYNCHRO SERVEUR</Text>
+        </Pressable>
       )}
 
       {/* Retro Flashing Screen Bottom Detail */}
