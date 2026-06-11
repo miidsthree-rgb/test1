@@ -95,10 +95,10 @@ const syncAndUploadHighScore = async (newEntry, gameType, force = false) => {
       mergedBoard.push(newEntry);
     }
     
-    // Sort and keep top 5
+    // Sort and keep top 10
     mergedBoard = mergedBoard
       .sort((a, b) => Number(b.streak) - Number(a.streak))
-      .slice(0, 5);
+      .slice(0, 10);
       
     const key = `${LEADERBOARD_KEY_PREFIX}${gameType}`;
     localStorage.setItem(key, JSON.stringify(mergedBoard));
@@ -129,7 +129,7 @@ export const getLeaderboard = (gameType = 'translation') => {
 export const checkHighScore = (streak, gameType = 'translation') => {
   if (Number(streak) <= 0) return false;
   const board = getLeaderboard(gameType);
-  if (board.length < 5) return true;
+  if (board.length < 10) return true;
   return Number(streak) > Number(board[board.length - 1].streak || 0);
 };
 
@@ -162,10 +162,10 @@ export const addHighScore = (name, streak, gameType = 'translation', force = fal
     newBoard.push(newEntry);
   }
   
-  // Sort and keep top 5
+  // Sort and keep top 10
   newBoard = newBoard
     .sort((a, b) => Number(b.streak) - Number(a.streak))
-    .slice(0, 5);
+    .slice(0, 10);
     
   if (Platform.OS === 'web') {
     try {
