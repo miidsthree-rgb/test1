@@ -75,7 +75,7 @@ export const uploadLeaderboard = async (gameType, board) => {
   }
 };
 
-const syncAndUploadHighScore = async (newEntry, gameType) => {
+const syncAndUploadHighScore = async (newEntry, gameType, force = false) => {
   try {
     const globalBoard = await fetchGlobalLeaderboard(gameType);
     const boardToUse = globalBoard || getLeaderboard(gameType);
@@ -87,8 +87,8 @@ const syncAndUploadHighScore = async (newEntry, gameType) => {
     
     let mergedBoard = [...boardToUse];
     if (existingIndex !== -1) {
-      // If the new score is higher, replace it
-      if (Number(newEntry.streak) > Number(boardToUse[existingIndex].streak || 0)) {
+      // If the new score is higher, or if we force it (developer cheat mode)
+      if (force || Number(newEntry.streak) > Number(boardToUse[existingIndex].streak || 0)) {
         mergedBoard[existingIndex] = newEntry;
       }
     } else {
@@ -133,7 +133,7 @@ export const checkHighScore = (streak, gameType = 'translation') => {
   return Number(streak) > Number(board[board.length - 1].streak || 0);
 };
 
-export const addHighScore = (name, streak, gameType = 'translation') => {
+export const addHighScore = (name, streak, gameType = 'translation', force = false) => {
   const board = getLeaderboard(gameType);
   const today = new Date();
   const dateStr = `${today.getDate().toString().padStart(2, '0')}/${(today.getMonth() + 1).toString().padStart(2, '0')}/${today.getFullYear()}`;
@@ -154,8 +154,8 @@ export const addHighScore = (name, streak, gameType = 'translation') => {
   
   let newBoard = [...board];
   if (existingIndex !== -1) {
-    // If the new score is higher, replace it
-    if (Number(streak) > Number(board[existingIndex].streak || 0)) {
+    // If the new score is higher, or if we force it (developer cheat mode)
+    if (force || Number(streak) > Number(board[existingIndex].streak || 0)) {
       newBoard[existingIndex] = newEntry;
     }
   } else {
@@ -171,7 +171,7 @@ export const addHighScore = (name, streak, gameType = 'translation') => {
     try {
       const key = `${LEADERBOARD_KEY_PREFIX}${gameType}`;
       localStorage.setItem(key, JSON.stringify(newBoard));
-      syncAndUploadHighScore(newEntry, gameType);
+      syncAndUploadHighScore(newEntry, gameType, force);
     } catch (e) {}
   }
   

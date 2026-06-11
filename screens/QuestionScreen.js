@@ -1229,7 +1229,7 @@ export default function QuestionScreen() {
                         alert("Entrez un nom valide !");
                         return;
                       }
-                      addHighScore(cheatName, val, 'question');
+                      addHighScore(cheatName, val, 'question', true);
                       alert("Score enregistré !");
                       setShowCheatModal(false);
                       setCheatStreak('');

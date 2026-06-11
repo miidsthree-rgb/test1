@@ -1338,7 +1338,7 @@ export default function TranslationScreen() {
                           alert("Entrez un nom valide !");
                           return;
                         }
-                        addHighScore(cheatName, val, 'translation');
+                        addHighScore(cheatName, val, 'translation', true);
                         alert("Score enregistré !");
                         setShowCheatModal(false);
                         setCheatStreak('');
