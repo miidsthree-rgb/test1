@@ -41,13 +41,7 @@ const base64UrlDecode = (str) => {
 export const fetchGlobalLeaderboard = async (gameType = 'translation') => {
   if (Platform.OS === 'web') {
     try {
-      const response = await fetch(`https://keyvalue.immanuel.co/api/KeyVal/GetValue/${APP_KEY}/${gameType}_leaderboard?t=${Date.now()}`, {
-        headers: {
-          'Cache-Control': 'no-store',
-          'Pragma': 'no-cache',
-          'Expires': '0'
-        }
-      });
+      const response = await fetch(`https://keyvalue.immanuel.co/api/KeyVal/GetValue/${APP_KEY}/${gameType}_leaderboard?t=${Date.now()}`);
       if (response.ok) {
         const text = await response.text();
         const cleanedText = text.replace(/"/g, '').trim(); // Remove surrounding quotes
@@ -123,15 +117,7 @@ export const getLeaderboard = (gameType = 'translation') => {
       const key = `${LEADERBOARD_KEY_PREFIX}${gameType}`;
       const data = localStorage.getItem(key);
       if (data) {
-        const parsed = JSON.parse(data);
-        if (Array.isArray(parsed)) {
-          const cleaned = parsed.filter(item => (item.name || '').toLowerCase().trim() !== 'test');
-          if (cleaned.length !== parsed.length) {
-            localStorage.setItem(key, JSON.stringify(cleaned));
-          }
-          return cleaned;
-        }
-        return parsed;
+        return JSON.parse(data);
       } else {
         localStorage.setItem(key, JSON.stringify(defaultLeaderboard));
         return defaultLeaderboard;
