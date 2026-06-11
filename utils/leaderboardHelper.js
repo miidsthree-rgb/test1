@@ -88,7 +88,7 @@ const syncAndUploadHighScore = async (newEntry, gameType) => {
     let mergedBoard = [...boardToUse];
     if (existingIndex !== -1) {
       // If the new score is higher, replace it
-      if (newEntry.streak > boardToUse[existingIndex].streak) {
+      if (Number(newEntry.streak) > Number(boardToUse[existingIndex].streak || 0)) {
         mergedBoard[existingIndex] = newEntry;
       }
     } else {
@@ -97,7 +97,7 @@ const syncAndUploadHighScore = async (newEntry, gameType) => {
     
     // Sort and keep top 5
     mergedBoard = mergedBoard
-      .sort((a, b) => b.streak - a.streak)
+      .sort((a, b) => Number(b.streak) - Number(a.streak))
       .slice(0, 5);
       
     const key = `${LEADERBOARD_KEY_PREFIX}${gameType}`;
@@ -127,10 +127,10 @@ export const getLeaderboard = (gameType = 'translation') => {
 };
 
 export const checkHighScore = (streak, gameType = 'translation') => {
-  if (streak <= 0) return false;
+  if (Number(streak) <= 0) return false;
   const board = getLeaderboard(gameType);
   if (board.length < 5) return true;
-  return streak > board[board.length - 1].streak;
+  return Number(streak) > Number(board[board.length - 1].streak || 0);
 };
 
 export const addHighScore = (name, streak, gameType = 'translation') => {
@@ -155,7 +155,7 @@ export const addHighScore = (name, streak, gameType = 'translation') => {
   let newBoard = [...board];
   if (existingIndex !== -1) {
     // If the new score is higher, replace it
-    if (streak > board[existingIndex].streak) {
+    if (Number(streak) > Number(board[existingIndex].streak || 0)) {
       newBoard[existingIndex] = newEntry;
     }
   } else {
@@ -164,7 +164,7 @@ export const addHighScore = (name, streak, gameType = 'translation') => {
   
   // Sort and keep top 5
   newBoard = newBoard
-    .sort((a, b) => b.streak - a.streak)
+    .sort((a, b) => Number(b.streak) - Number(a.streak))
     .slice(0, 5);
     
   if (Platform.OS === 'web') {

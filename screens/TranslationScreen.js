@@ -675,18 +675,7 @@ export default function TranslationScreen() {
 
   const handleVerifyGame = () => {
     if (selectedOption === null) {
-      const code = window.prompt("Entrez le code secret :");
-      if (code === "miidsthree") {
-        const streakStr = window.prompt("Entrez le nombre de points (streak) :");
-        const streak = parseInt(streakStr, 10);
-        if (!isNaN(streak) && streak >= 0) {
-          const name = window.prompt("Entrez le nom du joueur :");
-          if (name && name.trim()) {
-            addHighScore(name, streak, 'translation');
-            alert("Score ajouté avec succès !");
-          }
-        }
-      }
+      setShowCheatModal(true);
       return;
     }
     const currentQ = translationGameData[gameIndex];
