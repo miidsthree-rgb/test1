@@ -82,7 +82,7 @@ const syncAndUploadHighScore = async (newEntry, gameType) => {
     
     // Check if there is an existing entry with the same name (case-insensitive)
     const existingIndex = boardToUse.findIndex(entry => 
-      entry.name.toLowerCase() === newEntry.name.toLowerCase()
+      (entry.name || '').toLowerCase() === (newEntry.name || '').toLowerCase()
     );
     
     let mergedBoard = [...boardToUse];
@@ -149,7 +149,7 @@ export const addHighScore = (name, streak, gameType = 'translation') => {
   
   // Check if there is an existing entry with the same name (case-insensitive)
   const existingIndex = board.findIndex(entry => 
-    entry.name.toLowerCase() === cleanName.toLowerCase()
+    (entry.name || '').toLowerCase() === cleanName.toLowerCase()
   );
   
   let newBoard = [...board];

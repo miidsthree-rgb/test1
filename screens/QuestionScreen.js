@@ -13,7 +13,7 @@ import {
 import { useIsFocused } from '@react-navigation/native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { theme } from '../theme';
-import { checkHighScore, addHighScore, saveGameSession, getCoins, spendCoins, addCoins, hasExtraLifeUpgrade, hasExtendedTimerUpgrade, hasDoubleCoinsUpgrade, getValorantRank } from '../utils/leaderboardHelper';
+import { checkHighScore, addHighScore, saveGameSession, getCoins, spendCoins, addCoins, hasExtraLifeUpgrade, hasExtendedTimerUpgrade, hasDoubleCoinsUpgrade, getValorantRank, fetchGlobalLeaderboard } from '../utils/leaderboardHelper';
 
 // Irregular verbs mapping for grammar parser
 const irregularVerbs = {
@@ -700,7 +700,10 @@ export default function QuestionScreen() {
     setShowFeedback(false);
 
     if (isGameOver) {
-      setQuizFinished(true);
+      // Trigger quiz finished screen after ensuring global leaderboard is synced
+      fetchGlobalLeaderboard('question').finally(() => {
+        setQuizFinished(true);
+      });
       return;
     }
 

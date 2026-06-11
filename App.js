@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -8,6 +8,7 @@ import LeaderboardScreen from './screens/LeaderboardScreen';
 import ShopScreen from './screens/ShopScreen';
 import { theme } from './theme';
 import { Text, TextInput, StyleSheet } from 'react-native';
+import { fetchGlobalLeaderboard } from './utils/leaderboardHelper';
 
 // Force global retro monospace font family
 const customFont = theme.fonts.retro;
@@ -29,6 +30,12 @@ TextInput.defaultProps.style = { fontFamily: customFont };
 const Tab = createBottomTabNavigator();
 
 export default function App() {
+  useEffect(() => {
+    // Pre-fetch global leaderboards on startup to sync local storage
+    fetchGlobalLeaderboard('translation');
+    fetchGlobalLeaderboard('question');
+  }, []);
+
   return (
     <NavigationContainer>
       <Tab.Navigator

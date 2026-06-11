@@ -15,7 +15,7 @@ import {
 import { useIsFocused } from '@react-navigation/native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { theme } from '../theme';
-import { checkHighScore, addHighScore, saveGameSession, getCoins, spendCoins, addCoins, hasExtraLifeUpgrade, hasExtendedTimerUpgrade, hasDoubleCoinsUpgrade, getValorantRank } from '../utils/leaderboardHelper';
+import { checkHighScore, addHighScore, saveGameSession, getCoins, spendCoins, addCoins, hasExtraLifeUpgrade, hasExtendedTimerUpgrade, hasDoubleCoinsUpgrade, getValorantRank, fetchGlobalLeaderboard } from '../utils/leaderboardHelper';
 
 // Translation quiz data (40 curated grammar and translation traps)
 const translationGameData = [
@@ -697,8 +697,10 @@ export default function TranslationScreen() {
     setShowGameFeedback(false);
 
     if (isGameOver) {
-      // Trigger game over screen
-      setGameFinished(true);
+      // Trigger game over screen after ensuring global leaderboard is synced
+      fetchGlobalLeaderboard('translation').finally(() => {
+        setGameFinished(true);
+      });
       return;
     }
 
