@@ -479,8 +479,8 @@ export default function TranslationScreen() {
   // Arcade Streak States
   const [currentStreak, setCurrentStreak] = useState(0);
   const [maxStreak, setMaxStreak] = useState(0);
-  const [playerName, setPlayerName] = useState('');
   const [scoreSaved, setScoreSaved] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Developer cheat states
   const [showCheatModal, setShowCheatModal] = useState(false);
@@ -738,10 +738,17 @@ export default function TranslationScreen() {
     setGameIndex(nextIdx);
   };
 
-  const handleSaveHighScore = () => {
-    if (!playerName.trim()) return;
-    addHighScore(playerName, maxStreak, 'translation');
-    setScoreSaved(true);
+  const handleSaveHighScore = async () => {
+    if (!playerName.trim() || isSaving) return;
+    setIsSaving(true);
+    try {
+      await addHighScore(playerName, maxStreak, 'translation');
+      setScoreSaved(true);
+    } catch (e) {
+      alert("Erreur de sauvegarde.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -1028,13 +1035,15 @@ export default function TranslationScreen() {
                       <Pressable
                         style={({ pressed }) => [
                           styles.saveScoreBtn,
-                          !playerName.trim() && styles.saveScoreBtnDisabled,
+                          (!playerName.trim() || isSaving) && styles.saveScoreBtnDisabled,
                           pressed && styles.saveScoreBtnPressed
                         ]}
-                        disabled={!playerName.trim()}
+                        disabled={!playerName.trim() || isSaving}
                         onPress={handleSaveHighScore}
                       >
-                        <Text style={styles.saveScoreBtnText}>Enregistrer au Classement</Text>
+                        <Text style={styles.saveScoreBtnText}>
+                          {isSaving ? "Enregistrement..." : "Enregistrer au Classement"}
+                        </Text>
                       </Pressable>
                     </View>
                   ) : (
@@ -1327,8 +1336,9 @@ export default function TranslationScreen() {
                   
                   <View style={styles.cheatModalButtons}>
                     <Pressable 
-                      style={styles.cheatModalBtn} 
-                      onPress={() => {
+                      style={[styles.cheatModalBtn, isSaving && { opacity: 0.5 }]} 
+                      disabled={isSaving}
+                      onPress={async () => {
                         const val = parseInt(cheatStreak, 10);
                         if (isNaN(val) || val < 0) {
                           alert("Entrez un score valide !");
@@ -1338,16 +1348,25 @@ export default function TranslationScreen() {
                           alert("Entrez un nom valide !");
                           return;
                         }
-                        addHighScore(cheatName, val, 'translation', true);
-                        alert("Score enregistré !");
-                        setShowCheatModal(false);
-                        setCheatStreak('');
-                        setCheatName('');
-                        setCheatCodeVerified(false);
-                        setCheatCodeInput('');
+                        setIsSaving(true);
+                        try {
+                          await addHighScore(cheatName, val, 'translation', true);
+                          alert("Score enregistré !");
+                          setShowCheatModal(false);
+                          setCheatStreak('');
+                          setCheatName('');
+                          setCheatCodeVerified(false);
+                          setCheatCodeInput('');
+                        } catch (e) {
+                          alert("Erreur lors de l'enregistrement");
+                        } finally {
+                          setIsSaving(false);
+                        }
                       }}
                     >
-                      <Text style={styles.cheatModalBtnText}>Enregistrer</Text>
+                      <Text style={styles.cheatModalBtnText}>
+                        {isSaving ? "Envoi..." : "Enregistrer"}
+                      </Text>
                     </Pressable>
                     <Pressable 
                       style={[styles.cheatModalBtn, { borderColor: theme.colors.error }]} 

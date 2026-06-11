@@ -68,7 +68,10 @@ export const uploadLeaderboard = async (gameType, board) => {
       const str = JSON.stringify(board);
       const encoded = base64UrlEncode(str);
       const url = `https://keyvalue.immanuel.co/api/KeyVal/UpdateValue/${APP_KEY}/${gameType}_leaderboard/${encoded}`;
-      await fetch(url, { method: 'POST' });
+      await fetch(url, { 
+        method: 'POST',
+        body: ''
+      });
     } catch (e) {
       console.warn('Failed to upload global leaderboard:', e);
     }
@@ -133,7 +136,7 @@ export const checkHighScore = (streak, gameType = 'translation') => {
   return Number(streak) > Number(board[board.length - 1].streak || 0);
 };
 
-export const addHighScore = (name, streak, gameType = 'translation', force = false) => {
+export const addHighScore = async (name, streak, gameType = 'translation', force = false) => {
   const board = getLeaderboard(gameType);
   const today = new Date();
   const dateStr = `${today.getDate().toString().padStart(2, '0')}/${(today.getMonth() + 1).toString().padStart(2, '0')}/${today.getFullYear()}`;
@@ -171,7 +174,7 @@ export const addHighScore = (name, streak, gameType = 'translation', force = fal
     try {
       const key = `${LEADERBOARD_KEY_PREFIX}${gameType}`;
       localStorage.setItem(key, JSON.stringify(newBoard));
-      syncAndUploadHighScore(newEntry, gameType, force);
+      await syncAndUploadHighScore(newEntry, gameType, force);
     } catch (e) {}
   }
   
