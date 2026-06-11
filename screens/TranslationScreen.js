@@ -482,6 +482,13 @@ export default function TranslationScreen() {
   const [playerName, setPlayerName] = useState('');
   const [scoreSaved, setScoreSaved] = useState(false);
 
+  // Developer cheat states
+  const [showCheatModal, setShowCheatModal] = useState(false);
+  const [cheatCodeInput, setCheatCodeInput] = useState('');
+  const [cheatCodeVerified, setCheatCodeVerified] = useState(false);
+  const [cheatStreak, setCheatStreak] = useState('');
+  const [cheatName, setCheatName] = useState('');
+
   // Timer Effect
   useEffect(() => {
     let interval = null;
@@ -1265,6 +1272,112 @@ export default function TranslationScreen() {
             )}
           </ScrollView>
         )}
+
+        {/* Developer menu / cheat modal overlay */}
+        {showCheatModal && (
+          <View style={styles.cheatModalOverlay}>
+            <View style={styles.cheatModalContent}>
+              <Text style={styles.cheatModalTitle}>🚀 MENU DÉVELOPPEUR 🚀</Text>
+              
+              {!cheatCodeVerified ? (
+                <View>
+                  <Text style={styles.cheatModalLabel}>Entrez le code secret :</Text>
+                  <TextInput
+                    style={styles.cheatModalInput}
+                    value={cheatCodeInput}
+                    onChangeText={setCheatCodeInput}
+                    placeholder="Code..."
+                    placeholderTextColor={theme.colors.textMuted}
+                    secureTextEntry
+                  />
+                  <View style={styles.cheatModalButtons}>
+                    <Pressable 
+                      style={styles.cheatModalBtn} 
+                      onPress={() => {
+                        if (cheatCodeInput === "miidsthree") {
+                          setCheatCodeVerified(true);
+                        } else {
+                          alert("Code incorrect !");
+                        }
+                      }}
+                    >
+                      <Text style={styles.cheatModalBtnText}>Valider</Text>
+                    </Pressable>
+                    <Pressable 
+                      style={[styles.cheatModalBtn, { borderColor: theme.colors.error }]} 
+                      onPress={() => {
+                        setShowCheatModal(false);
+                        setCheatCodeInput('');
+                      }}
+                    >
+                      <Text style={[styles.cheatModalBtnText, { color: theme.colors.error }]}>Annuler</Text>
+                    </Pressable>
+                  </View>
+                </View>
+              ) : (
+                <View>
+                  <Text style={styles.cheatModalLabel}>Nombre de points (streak) :</Text>
+                  <TextInput
+                    style={styles.cheatModalInput}
+                    value={cheatStreak}
+                    onChangeText={setCheatStreak}
+                    keyboardType="numeric"
+                    placeholder="Score..."
+                    placeholderTextColor={theme.colors.textMuted}
+                  />
+                  
+                  <Text style={styles.cheatModalLabel}>Nom du joueur :</Text>
+                  <TextInput
+                    style={styles.cheatModalInput}
+                    value={cheatName}
+                    onChangeText={setCheatName}
+                    placeholder="Nom..."
+                    placeholderTextColor={theme.colors.textMuted}
+                    maxLength={12}
+                  />
+                  
+                  <View style={styles.cheatModalButtons}>
+                    <Pressable 
+                      style={styles.cheatModalBtn} 
+                      onPress={() => {
+                        const val = parseInt(cheatStreak, 10);
+                        if (isNaN(val) || val < 0) {
+                          alert("Entrez un score valide !");
+                          return;
+                        }
+                        if (!cheatName.trim()) {
+                          alert("Entrez un nom valide !");
+                          return;
+                        }
+                        addHighScore(cheatName, val, 'translation');
+                        alert("Score enregistré !");
+                        setShowCheatModal(false);
+                        setCheatStreak('');
+                        setCheatName('');
+                        setCheatCodeVerified(false);
+                        setCheatCodeInput('');
+                      }}
+                    >
+                      <Text style={styles.cheatModalBtnText}>Enregistrer</Text>
+                    </Pressable>
+                    <Pressable 
+                      style={[styles.cheatModalBtn, { borderColor: theme.colors.error }]} 
+                      onPress={() => {
+                        setShowCheatModal(false);
+                        setCheatStreak('');
+                        setCheatName('');
+                        setCheatCodeVerified(false);
+                        setCheatCodeInput('');
+                      }}
+                    >
+                      <Text style={[styles.cheatModalBtnText, { color: theme.colors.error }]}>Annuler</Text>
+                    </Pressable>
+                  </View>
+                </View>
+              )}
+            </View>
+          </View>
+        )}
       </View>
     </KeyboardAvoidingView>
   );
@@ -1908,5 +2021,65 @@ const styles = StyleSheet.create({
     marginBottom: theme.spacing.lg,
     textAlign: 'center',
     opacity: 0.8,
+  },
+  cheatModalOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.85)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 9999,
+  },
+  cheatModalContent: {
+    backgroundColor: theme.colors.cardBg,
+    borderWidth: 2,
+    borderColor: theme.colors.primary,
+    padding: theme.spacing.lg,
+    width: '85%',
+    maxWidth: 400,
+  },
+  cheatModalTitle: {
+    color: theme.colors.primary,
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: theme.spacing.md,
+    letterSpacing: 1,
+  },
+  cheatModalLabel: {
+    color: theme.colors.white,
+    fontSize: 13,
+    marginBottom: 6,
+    marginTop: 10,
+  },
+  cheatModalInput: {
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderWidth: 1.5,
+    borderColor: theme.colors.borderMuted,
+    color: theme.colors.white,
+    padding: 10,
+    fontSize: 14,
+    marginBottom: theme.spacing.sm,
+  },
+  cheatModalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: theme.spacing.md,
+  },
+  cheatModalBtn: {
+    flex: 1,
+    borderWidth: 1.5,
+    borderColor: theme.colors.primary,
+    paddingVertical: 10,
+    alignItems: 'center',
+    marginHorizontal: 5,
+  },
+  cheatModalBtnText: {
+    color: theme.colors.primary,
+    fontWeight: 'bold',
+    fontSize: 13,
   },
 });
